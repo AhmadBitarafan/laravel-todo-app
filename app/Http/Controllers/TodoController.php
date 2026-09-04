@@ -18,6 +18,10 @@ class TodoController extends Controller
 
     public function todo_list_create(Request $request)
     {
+        $validate = $request->validate([
+            'todo-input'=>'required|string|max:100',
+        ]);
+
         $todo = Todo::create([
             'text' => $request->input('todo-input'),
         ]);

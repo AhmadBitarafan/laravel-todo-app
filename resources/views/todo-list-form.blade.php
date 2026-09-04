@@ -101,6 +101,11 @@
         <input type="text" placeholder="Enter a new todo..." name="todo-input">
         <button type="submit">Add</button>
     </form>
+    @if ($errors->any())
+        @foreach ($errors->all() as $error)
+            <p class="empty-message">{{$error}}</p>
+        @endforeach
+    @endif
     @if($todos->isEmpty())
         <div class="empty-message">There Is No  Todo Here Please Add Your First Todo</div>
     @else
