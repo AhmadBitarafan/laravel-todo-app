@@ -3,13 +3,12 @@
 use App\Http\Controllers\TodoController;
 use Illuminate\Support\Facades\Route;
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
-Route::prefix('todo/')->group(function () {
-    Route::get('/', [TodoController::class, 'todo_list_form'])->name('todo_list_form');
-    Route::post('/', [TodoController::class, 'todo_list_create'])->name('todo_list_create_form');
-    Route::delete('/{id}', [TodoController::class, 'todo_list_delete',])->name('todo_list_delete');
+Route::resource('todos',TodoController::class);
 
-
+Route::prefix('todos/')->name('todos.')->group(function () {
+        Route::get('trashed/list', [TodoController::class, 'trashed_list'])->name('trashed');
+        Route::patch('restore/{id}', [TodoController::class, 'restore'])->name('trashed.restore');
+        Route::delete('force/{id}', [TodoController::class, 'force_delete'])->name('trashed.forceDelete');
+        Route::get('pending/list', [TodoController::class, 'pending'])->name('pending');
+        Route::get('completed/list', [TodoController::class, 'completed'])->name('completed');
 });

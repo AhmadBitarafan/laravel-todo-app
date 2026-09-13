@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
-            $table->string('text');
+            $table->string('title');
+            $table->longText('description');
+            $table->boolean('completed')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('todo_list');
+        Schema::dropIfExists('todos');
     }
 };
