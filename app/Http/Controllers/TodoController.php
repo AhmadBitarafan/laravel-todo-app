@@ -48,59 +48,75 @@ class TodoController extends Controller
      */
     public function show(string $id)
     {
-
-        $todo = Todo::findOrFail($id);
+        $todo = Todo::withTrashed()->find($id);
+        if (!$todo) {
+            return redirect()->route('todos.index')->with('error', "there isn't any todo with this id");
+        }
+        if ($todo->trashed()) {
+            return redirect()->route('todos.index')->with('success', 'todo currently is in trash');
+        }
         return view('show', compact('todo'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(int $id)
-    {
-        $todo = Todo::findOrFail($id);
-        return view('edit', compact('todo'));
+
+
+/**
+ * Show the form for editing the specified resource.
+ */
+public
+function edit(int $id)
+{
+    $todo = Todo::findOrFail($id);
+    return view('edit', compact('todo'));
+}
+
+/**
+ * Update the specified resource in storage.
+ */
+public
+function update(UpdateTodoRequest $request, string $id)
+{
+    $todo = Todo::findOrFail($id);
+    $data = [];
+
+    if ($request->filled('title')) {
+        $data['title'] = $request->input('title');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTodoRequest $request, string $id)
-    {
-        $todo = Todo::findOrFail($id);
-        $data = [];
-
-        if ($request->filled('title')) {
-            $data['title'] = $request->input('title');
-        }
-
-        if ($request->filled('description')) {
-            $data['description'] = $request->input('description');
-        }
-
-        if ($request->has('completed')) {
-            $data['completed'] = $request->input('completed');
-        }
-        $todo->update($data);
-
-        return redirect()->back()->with('success', 'Todo updated successfully');
+    if ($request->filled('description')) {
+        $data['description'] = $request->input('description');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $todo = Todo::findOrFail($id);
-        $todo->delete();
-        return redirect()->back();
+    if ($request->has('completed')) {
+        $data['completed'] = $request->input('completed');
     }
-    public function trashed_list(){
-        $trashed_items = Todo::onlyTrashed()->get();
-        $trashed_count = count($trashed_items);
-        return view('trash',compact('trashed_items', 'trashed_count'));
-    }
-    public function restore(string $id){
+    $todo->update($data);
+
+    return redirect()->back()->with('success', 'Todo updated successfully');
+}
+
+/**
+ * Remove the specified resource from storage.
+ */
+public
+function destroy(string $id)
+{
+    $todo = Todo::findOrFail($id);
+    $todo->delete();
+    return redirect()->back();
+}
+
+public
+function trashed_list()
+{
+    $trashed_items = Todo::onlyTrashed()->get();
+    $trashed_count = count($trashed_items);
+    return view('trash', compact('trashed_items', 'trashed_count'));
+}
+
+public
+function restore(string $id)
+{
 
     $trashed_item = Todo::onlyTrashed()->findOrFail($id);
     $trashed_item->restore();
@@ -108,23 +124,32 @@ class TodoController extends Controller
     return redirect()
         ->route('todos.trashed')
         ->with('success', 'Todo restored successfully');
-    }
-    public function force_delete(string $id){
-        $trashed_item = Todo::onlyTrashed()->findOrFail($id);
-        $trashed_item->forceDelete();
-        return redirect()->route('todos.index')->with('success', 'todo deleted successfully');
-    }
-    public function pending(){
-        $pending_todos=Todo::all()->where('completed',false);
-        $pending_count = count($pending_todos);
-        return view('pending',compact('pending_todos','pending_count'));
+}
 
-    }
-    public function completed(){
-        $completed_todos = Todo::all()->where('completed',true);
-        $completed_count = count($completed_todos);
-        return view('completed',compact('completed_todos','completed_count'));
-    }
+public
+function force_delete(string $id)
+{
+    $trashed_item = Todo::onlyTrashed()->findOrFail($id);
+    $trashed_item->forceDelete();
+    return redirect()->route('todos.index')->with('success', 'todo deleted successfully');
+}
+
+public
+function pending()
+{
+    $pending_todos = Todo::all()->where('completed', false);
+    $pending_count = count($pending_todos);
+    return view('pending', compact('pending_todos', 'pending_count'));
+
+}
+
+public
+function completed()
+{
+    $completed_todos = Todo::all()->where('completed', true);
+    $completed_count = count($completed_todos);
+    return view('completed', compact('completed_todos', 'completed_count'));
+}
 
 
 }

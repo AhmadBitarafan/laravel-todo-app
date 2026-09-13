@@ -48,6 +48,13 @@
 <!-- ================= MAIN ================= -->
 
 <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    @if(session('error'))
+        <x-alert   message="{{session('error')}}"
+                   type="error"/>
+    @elseif(session('success'))
+        <x-alert   message="{{session('success')}}"
+                   type="success"/>
+    @endif
 
     <!-- Page Header -->
 
@@ -112,7 +119,13 @@
                             </label>
 
                         <div class="min-w-0">
-
+                            @if(session('error'))
+                                <x-alert   message="{{session('error')}}"
+                                           type="error"/>
+                            @else
+                                <x-alert   message="{{session('success')}}"
+                                           type="success"/>
+                            @endif
                             <div class="flex flex-wrap items-center gap-2">
                                 <a href="{{route('todos.show' , $completed_todo->id)}}" class="min-w-0">
                                     <h3 class="text-base font-bold text-slate-400 line-through sm:text-lg">
@@ -144,7 +157,7 @@
                         >
                             ویرایش
                         </a>
-                        <form action="{{route('todos.trashed'),$completed_todo->id}}" method="POST" onsubmit="return confirm('آیا از حذف این Todo مطمئن هستید؟');">
+                        <form action="{{route('todos.destroy',$completed_todo->id)}}" method="POST" onsubmit="return confirm('آیا از حذف این Todo مطمئن هستید؟');">
                             @method('DELETE')
                             <button type="submit" class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100">
                                 حذف

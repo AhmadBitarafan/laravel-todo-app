@@ -39,7 +39,13 @@
 <!-- ================= MAIN ================= -->
 
 <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-
+    @if(session('error'))
+        <x-alert   message="{{session('error')}}"
+                   type="error"/>
+    @elseif(session('success'))
+        <x-alert   message="{{session('success')}}"
+                   type="success"/>
+    @endif
     <!-- Page Header -->
 
     <section class="mb-8">
